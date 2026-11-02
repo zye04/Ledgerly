@@ -13,7 +13,9 @@
 - FR02 -> New external source addition must be unique
 - FR03 -> Currency should be displayed in EUR
 - FR04 -> Stores a snapshot of every asset and portfolio value every minute
-- FR05 -> On launch, fill the gap since the last snapshot at hour resolution: stocks from market data source, crypto from Kraken, converted to EUR
+- FR05 -> On launch, fill the gap since the last snapshot, converted to EUR:
+  - Stocks: daily resolution, from the market data source
+  - Crypto: hourly up to 30 days, daily beyond, from Kraken
 - FR06 -> Stored snapshot values must be aggregatable upwards in five minute, one hour, one week, one month and yearly
 
 ## Non-functional requirements
