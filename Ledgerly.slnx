@@ -1,2 +1,5 @@
 <Solution>
+  <Folder Name="/spikes/">
+    <Project Path="spikes/MarketDataSpike/MarketDataSpike.csproj" />
+  </Folder>
 </Solution>
