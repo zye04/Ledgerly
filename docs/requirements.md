@@ -16,6 +16,7 @@
 - FR05 -> On launch, fill the gap since the last snapshot, converted to EUR:
   - Stocks: daily resolution, from the market data source
   - Crypto: hourly up to 30 days, daily beyond, from Kraken
+  - uses the quantity held at each moment, rebuilt from trade history
 - FR06 -> Stored snapshot values must be aggregatable upwards in five minute, one hour, one week, one month and yearly
 
 ## Non-functional requirements
