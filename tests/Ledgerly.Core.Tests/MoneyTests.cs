@@ -27,6 +27,43 @@ public class MoneyTests
         var eur = new Money(10m, "EUR");
         var usd = new Money(5m, "USD");
 
-        Assert.Throws<InvalidOperationException>(() => eur.Add(usd));
+        Assert.Throws<ArgumentException>(() => eur.Add(usd));
+    }
+
+    [Fact]
+    public void Multiply_by_negative_throws()
+    {
+        var factor = -1m;
+        var money = new Money(10m, "EUR");
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => money.Multiply(factor));
+    }
+
+    [Fact]
+    public void Multiply_by_fractional_scales_the_amount()
+    {
+        var factor = 0.5m;
+        var result = new Money(10m, "EUR").Multiply(factor);
+
+        Assert.Equal(new Money(5m, "EUR"), result);
+    }
+
+    [Fact]
+    public void Multiply_by_non_fractional_scales_the_amount()
+    {
+        var factor = 4m;
+        var result = new Money(10m, "EUR").Multiply(factor);
+
+        Assert.Equal(new Money(40m, "EUR"), result);
+    }
+
+    [Fact]
+    public void Multiply_by_zero_dissolves_the_amount()
+    {
+        var factor = 0m;
+        var result = new Money(10m, "EUR").Multiply(factor);
+
+        Assert.Equal(new Money(0m, "EUR"), result);
+
     }
 }
