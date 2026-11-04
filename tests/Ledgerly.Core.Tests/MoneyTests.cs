@@ -1,5 +1,3 @@
-using Ledgerly.Core;
-
 namespace Ledgerly.Core.Tests;
 
 public class MoneyTests
