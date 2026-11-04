@@ -22,7 +22,6 @@ classDiagram
     }
     class Exchange {
         Name
-        Schedule
     }
     class Snapshot {
         Timestamp
@@ -50,7 +49,7 @@ classDiagram
 - **Account**: one connection to one broker, e.g. "my Trading 212 account". `Broker` is the kind (Trading 212 or Kraken); the account is the specific instance. UC03 adds an Account; FR02 says the same broker account cannot be added twice.
 - **Instrument**: the tradable thing, the same for every investor (NVIDIA, SXR8, Bitcoin). It exists whether or not it is held.
 - **Position**: the user's ownership of one Instrument in one Account: how much, and at what average price.
-- **Exchange**: where an Instrument trades, and when it is open (from Trading 212's schedules). Crypto has no Exchange: it trades 24/7.
+- **Exchange**: where an Instrument trades, e.g. XETRA or NASDAQ. Stocks and ETFs always have one; crypto has none, since it is not listed on a single venue and trades 24/7.
 - **Snapshot**: the value of one Position at one moment, in EUR (FR04). Recorded every minute while running, filled hourly or daily for gaps (FR05), with `Resolution` saying which.
 - **Trade**: one executed buy or sell that changed a Position's quantity (from Trading 212's filled orders and Kraken's trade history). Used to know the correct quantity at any moment inside a gap.
 - **Money**: an amount together with its currency. Amounts are never stored or passed around without their currency.
@@ -62,6 +61,9 @@ classDiagram
 - **Stock, ETF and crypto are a `Type`, not separate classes.** They hold the same data; where behaviour differs (crypto has no exchange hours), a check on `Type` is enough. Inheritance would add classes without removing any code.
 - **Prices and exchange rates are not stored.** They are inputs used to calculate a Snapshot's EUR value, then discarded. The incremental fetch (ADR-0002) uses the newest Snapshot's timestamp to know what is missing.
 - **Instrument has its own `Id`; ISIN is an attribute.** Crypto has no ISIN, so ISIN cannot be the identity.
+- **Exchange is a value, not an entity.** Two Exchanges with the same name are the same exchange, so it is a record with value equality and no `Id`.
+- **The broker is not an Exchange.** Kraken is where the user holds crypto, which the model already expresses as an Account. Making it crypto's Exchange would mix the two concepts just to avoid a null.
+- **Trading schedules are deferred.** Trading 212 attaches a schedule to each instrument, not to each exchange, and one exchange can have several. Where Schedule lives is decided when gap-filling (FR05) first needs it.
 - **External identifiers are not in the domain model.** Trading 212 tickers, Kraken pair names and EODHD symbols belong to their adapters (ADR-0001); the core knows only the Instrument.
 - **API keys are not part of the model.** They live in configuration (user secrets), never in the database (NFR02).
 
