@@ -1,11 +1,7 @@
-using System.Transactions;
-using Ledgerly.Core;
-
 namespace Ledgerly.Core.Tests;
 
 public class InstrumentTests
 {
-
     [Theory]
     [InlineData("SXR8", "abfas123nsdfa", InstrumentType.Etf, "EUR")]
     [InlineData("BTC", null, InstrumentType.Crypto, "USD")]
@@ -40,4 +36,21 @@ public class InstrumentTests
         Assert.Equal("currency", currencyThrow.ParamName);
     }
 
+    [Theory]
+    [InlineData(InstrumentType.Stock, null)]
+    [InlineData(InstrumentType.Etf, null)]
+    [InlineData(InstrumentType.Stock, "")]
+    [InlineData(InstrumentType.Etf, " ")]
+    public void Stock_or_etf_without_isin_throws(InstrumentType type, string? isin)
+    {
+        var isinThrow = Assert.Throws<ArgumentException>(() => new Instrument("NVDA", isin, type, "USD"));
+        Assert.Equal("isin", isinThrow.ParamName);
+    }
+
+    [Fact]
+    public void Crypto_with_isin_throws()
+    {
+        var isinThrow = Assert.Throws<ArgumentException>(() => new Instrument("BTC", "US67066G1040", InstrumentType.Crypto, "USD"));
+        Assert.Equal("isin", isinThrow.ParamName);
+    }
 }
