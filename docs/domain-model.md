@@ -64,6 +64,9 @@ classDiagram
 - **Exchange is a value, not an entity.** Two Exchanges with the same name are the same exchange, so it is a record with value equality and no `Id`.
 - **The broker is not an Exchange.** Kraken is where the user holds crypto, which the model already expresses as an Account. Making it crypto's Exchange would mix the two concepts just to avoid a null.
 - **Trading schedules are deferred.** Trading 212 attaches a schedule to each instrument, not to each exchange, and one exchange can have several. Where Schedule lives is decided when gap-filling (FR05) first needs it.
+- **A Position at quantity 0 is closed, not deleted.** Its Snapshots and Trades still describe the portfolio's past, so removing the Position would erase that history.
+- **An average price of 0 is valid.** Crypto received from staking rewards or airdrops costs nothing, so a Position made only of it has a zero average price. Negative values are rejected.
+- **A Position's average price is in its Instrument's currency.** Prices are kept as the broker reports them; conversion to EUR happens only when a Snapshot is calculated.
 - **External identifiers are not in the domain model.** Trading 212 tickers, Kraken pair names and EODHD symbols belong to their adapters (ADR-0001); the core knows only the Instrument.
 - **API keys are not part of the model.** They live in configuration (user secrets), never in the database (NFR02).
 
