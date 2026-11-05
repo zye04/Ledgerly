@@ -6,7 +6,8 @@ The core concepts of Ledgerly and how they relate. Names here are the project's 
 classDiagram
     class Account {
         Id
-        Broker
+        Broker : Trading212 | Kraken
+        ExternalAccountId
         Name
     }
     class Position {
@@ -32,7 +33,7 @@ classDiagram
 
     class Trade {
         Timestamp
-        TradeType : Buy | Sell
+        Type : Buy | Sell
         Quantity
         Price : Money
     }
@@ -46,7 +47,7 @@ classDiagram
 
 ## Concepts
 
-- **Account**: one connection to one broker, e.g. "my Trading 212 account". `Broker` is the kind (Trading 212 or Kraken); the account is the specific instance. UC03 adds an Account; FR02 says the same broker account cannot be added twice.
+- **Account**: one connection to one broker, e.g. "my Trading 212 account". `Broker` is the kind (Trading 212 or Kraken); the account is the specific instance. A user can have several Accounts, including several at the same broker. `ExternalAccountId` is the broker's own number for the account. UC03 adds an Account; FR02 says the same broker account cannot be added twice.
 - **Instrument**: the tradable thing, the same for every investor (NVIDIA, SXR8, Bitcoin). It exists whether or not it is held.
 - **Position**: the user's ownership of one Instrument in one Account: how much, and at what average price.
 - **Exchange**: where an Instrument trades, e.g. XETRA or NASDAQ. Stocks and ETFs always have one; crypto has none, since it is not listed on a single venue and trades 24/7.
@@ -68,7 +69,8 @@ classDiagram
 - **An average price of 0 is valid.** Crypto received from staking rewards or airdrops costs nothing, so a Position made only of it has a zero average price. Negative values are rejected.
 - **A Position's average price is in its Instrument's currency.** Prices are kept as the broker reports them; conversion to EUR happens only when a Snapshot is calculated.
 - **Trade timestamps are stored in UTC.** Brokers and exchanges report times in different zones; converting on creation keeps every moment exact and comparable. The original time zone is dropped, since only the moment matters.
-- **External identifiers are not in the domain model.** Trading 212 tickers, Kraken pair names and EODHD symbols belong to their adapters (ADR-0001); the core knows only the Instrument.
+- **External identifiers are not in the domain model.** Trading 212 tickers, Kraken pair names and EODHD symbols belong to their adapters (ADR-0001); the core knows only the Instrument. The one exception is `ExternalAccountId`: FR02 is a domain rule and cannot be expressed without it.
+- **FR02 is enforced where all Accounts are known, not in the Account constructor.** A single Account cannot know whether another one with the same Broker and `ExternalAccountId` exists. The add-account use case (UC03) checks before saving, and the database backs it with a unique constraint.
 - **API keys are not part of the model.** They live in configuration (user secrets), never in the database (NFR02).
 
 - **Quantities inside a gap are rebuilt from Trades, working backwards.** Filling a gap with the current quantity would be wrong before any trade made while Ledgerly was off. Instead, the quantity at a past moment is the current quantity minus buys plus sells made since then, so only the Trades inside the gap are fetched.

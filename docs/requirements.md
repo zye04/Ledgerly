@@ -10,7 +10,7 @@
 ## Functional requirements
 
 - FR01 -> On opening the app must validate the recency of the data and update it to the last minute
-- FR02 -> New external source addition must be unique
+- FR02 -> The same broker account cannot be added twice; several accounts at the same broker are allowed.
 - FR03 -> Currency should be displayed in EUR
 - FR04 -> Stores a snapshot of every asset and portfolio value every minute
 - FR05 -> On launch, fill the gap since the last snapshot, converted to EUR:
