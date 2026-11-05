@@ -32,7 +32,7 @@ classDiagram
 
     class Trade {
         Timestamp
-        Side : Buy | Sell
+        TradeType : Buy | Sell
         Quantity
         Price : Money
     }
@@ -67,6 +67,7 @@ classDiagram
 - **A Position at quantity 0 is closed, not deleted.** Its Snapshots and Trades still describe the portfolio's past, so removing the Position would erase that history.
 - **An average price of 0 is valid.** Crypto received from staking rewards or airdrops costs nothing, so a Position made only of it has a zero average price. Negative values are rejected.
 - **A Position's average price is in its Instrument's currency.** Prices are kept as the broker reports them; conversion to EUR happens only when a Snapshot is calculated.
+- **Trade timestamps are stored in UTC.** Brokers and exchanges report times in different zones; converting on creation keeps every moment exact and comparable. The original time zone is dropped, since only the moment matters.
 - **External identifiers are not in the domain model.** Trading 212 tickers, Kraken pair names and EODHD symbols belong to their adapters (ADR-0001); the core knows only the Instrument.
 - **API keys are not part of the model.** They live in configuration (user secrets), never in the database (NFR02).
 
